@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ethers Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+    <h1>Ethers Library Test</h1>
+    <button onclick="testEthers()">Test Ethers</button>
+    <div id="result"></div>
+
+    <script>
+        function testEthers() {
+            const result = document.getElementById('result');
+            
+            if (typeof ethers === 'undefined') {
+                result.innerHTML = '❌ Ethers not loaded';
+                return;
+            }
+            
+            result.innerHTML = `
+                ✅ Ethers loaded successfully!<br>
+                Version: ${ethers.version}<br>
+                Utils available: ${typeof ethers.utils !== 'undefined'}<br>
+                Providers available: ${typeof ethers.providers !== 'undefined'}<br>
+                Test address validation: ${ethers.utils.isAddress('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')}
+            `;
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', testEthers);
+    </script>
+</body>
+</html>
