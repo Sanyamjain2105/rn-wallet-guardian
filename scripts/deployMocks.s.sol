@@ -5,6 +5,7 @@ import "forge-std/Script.sol";
 import "../src/MockERC20.sol";
 import "../src/MockUniswapV2Pair.sol";
 import "../src/MockLiquidationContract.sol";
+import "../src/MockAttackContract.sol";
 import "../src/WalletGuardianCallback.sol";
 
 contract DeployMockContracts is Script {
@@ -30,6 +31,10 @@ contract DeployMockContracts is Script {
         // Deploy liquidation contract
         MockLiquidationContract liquidation = new MockLiquidationContract();
         console.log("Liquidation contract deployed at:", address(liquidation));
+        
+        // Deploy mock attack contract  
+        MockAttackContract attackContract = new MockAttackContract();
+        console.log("MockAttackContract deployed at:", address(attackContract));
         
         // Deploy callback contract (using deployer as callback proxy for testing)
         WalletGuardianCallback callback = new WalletGuardianCallback{value: 0.1 ether}(vm.addr(pk));
