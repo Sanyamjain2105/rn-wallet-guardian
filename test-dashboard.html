@@ -8,6 +8,30 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <!-- Fallback ethers CDN -->
     <script>
+        // Update the always-visible balances section
+        async function updateLiveBalances() {
+            if (!window.connectedAccount || !window.safeAccount) return;
+            try {
+                const bal1 = await provider.getBalance(window.connectedAccount);
+                const bal2 = await provider.getBalance(window.safeAccount);
+                document.getElementById('liveBalances').innerHTML =
+                    `<div><b>Connected Account:</b> ${window.connectedAccount}<br>Balance: ${ethers.utils.formatEther(bal1)} ETH</div>` +
+                    `<div style='margin-top:10px'><b>Safe Account:</b> ${window.safeAccount}<br>Balance: ${ethers.utils.formatEther(bal2)} ETH</div>`;
+            } catch (e) {
+                document.getElementById('liveBalances').innerHTML = 'Error fetching balances.';
+            }
+        }
+        async function updateBothBalances(addr1, addr2) {
+            try {
+                const bal1 = await provider.getBalance(addr1);
+                const bal2 = await provider.getBalance(addr2);
+                document.getElementById('bothBalances').innerHTML =
+                    `<div><b>Connected Account:</b> ${addr1}<br>Balance: ${ethers.utils.formatEther(bal1)} ETH</div>` +
+                    `<div style='margin-top:10px'><b>Safe Account:</b> ${addr2}<br>Balance: ${ethers.utils.formatEther(bal2)} ETH</div>`;
+            } catch (e) {
+                document.getElementById('bothBalances').innerHTML = 'Error fetching balances.';
+            }
+        }
         if (typeof ethers === 'undefined') {
             document.write('<script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"><\/script>');
         }
@@ -79,6 +103,13 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 1rem;
+        }
+
+        /* Make dropdown option text white */
+        select, select option {
+            color: white !important;
+            background: #2a5298;
+        }
         }
 
         .input-group input::placeholder {
@@ -186,7 +217,6 @@
             <div class="step">
                 <h3>Step 1: Connect Your Wallet</h3>
                 <button class="btn" id="connectBtn">Connect MetaMask</button>
-                
                 <div id="walletInfo" class="hidden">
                     <div class="status">
                         <strong>✅ Wallet Connected</strong>
@@ -214,17 +244,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Protection Type</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="sameBchain" name="transferType" value="sameChain" checked>
-                            <label for="sameChain">Different Account (Same Chain)</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="crossChain" name="transferType" value="crossChain">
-                            <label for="crossChain">Cross-Chain Transfer</label>
-                        </div>
-                    </div>
+                    <!-- Removed cross-chain transfer option -->
                 </div>
 
                 <div class="input-group" id="destinationGroup">
@@ -348,26 +368,18 @@
         async function connectWallet() {
             try {
                 document.getElementById('connectBtn').textContent = 'Connecting...';
-                
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 userAccount = accounts[0];
-                
                 provider = new ethers.providers.Web3Provider(window.ethereum);
                 signer = provider.getSigner();
-                
-                // Switch to Anvil network
+                // Switch to Anvil network (MetaMask custom network)
                 await switchToAnvil();
-                
-                // Update UI
                 document.getElementById('walletAddress').textContent = userAccount;
                 await updateBalance();
-                
                 document.getElementById('walletInfo').classList.remove('hidden');
                 document.getElementById('setupSection').classList.remove('hidden');
-                
                 document.getElementById('connectBtn').textContent = '✅ Connected';
                 document.getElementById('connectBtn').disabled = true;
-                
             } catch (error) {
                 console.error('Connection error:', error);
                 alert('Failed to connect: ' + error.message);
@@ -459,15 +471,13 @@
                     <strong>🛡️ Protection Setup Complete</strong><br>
                     Amount: ${amount} ETH<br>
                     Destination: ${destination}<br>
-                    Type: ${document.querySelector('input[name="transferType"]:checked').value}<br>
                     Callback Contract: ${callbackContractAddress}<br>
-                    Mock Attack Contract: ${mockAttackContractAddress}
+                    Mock Attack Contract: ${mockAttackContractAddress}<br>
+                    <div id="bothBalances"></div>
                 `;
-                
                 document.getElementById('createProtectionBtn').textContent = '✅ Protection Created';
                 document.getElementById('createProtectionBtn').disabled = true;
-                
-                await updateBalance();
+                await updateBothBalances(userAccount, destination);
                 
             } catch (error) {
                 console.error('Protection creation error:', error);
@@ -506,48 +516,20 @@
                         
                         // Direct ETH transfer to safe address (simulating what RN would do)
                         const transferAmount = ethers.utils.parseEther(amount);
-                        
                         const transferTx = await signer.sendTransaction({
                             to: destination,
                             value: transferAmount,
                             gasLimit: 21000
                         });
-                        
                         console.log('Emergency transfer transaction:', transferTx.hash);
                         const transferReceipt = await transferTx.wait();
                         console.log('Emergency transfer confirmed:', transferReceipt);
-                        
-                        // Also call callback contract to log the emergency action
-                        try {
-                            const callbackContract = new ethers.Contract(
-                                protectionData.callbackContract,
-                                [
-                                    "function executeEmergencyTransfer(address user, uint256 amount, address destinationAddress) external"
-                                ],
-                                signer
-                            );
-                            
-                            const logTx = await callbackContract.executeEmergencyTransfer(
-                                userAccount, 
-                                transferAmount, 
-                                destination
-                            );
-                            await logTx.wait();
-                            console.log('Emergency action logged:', logTx.hash);
-                        } catch (logError) {
-                            console.log('Log failed but transfer succeeded:', logError.message);
-                        }
-                        
                         document.getElementById('resultsSection').classList.remove('hidden');
                         document.getElementById('transferDetails').innerHTML = `
                             <strong>🚨 THREAT DETECTED BY REACTIVE NETWORK</strong><br><br>
                             Attack Type: ${attackType}<br>
                             Attack Transaction: ${tx.hash}<br>
                             Block: ${receipt.blockNumber}<br><br>
-                            <strong>📡 Reactive Network Response:</strong><br>
-                            • Event detected on Anvil chain<br>
-                            • WalletGuardianRN.react() triggered<br>
-                            • Cross-chain callback initiated<br><br>
                             <strong>✅ REAL EMERGENCY TRANSFER EXECUTED:</strong><br>
                             Amount: ${amount} ETH<br>
                             From: ${userAccount}<br>
@@ -556,10 +538,9 @@
                             Gas Used: ${transferReceipt.gasUsed.toString()}<br>
                             Status: 🛡️ FUNDS ACTUALLY SECURED
                         `;
-                        
                         document.getElementById('simulateAttackBtn').textContent = '✅ Real Transfer Complete - Check Balances!';
                         document.getElementById('simulateAttackBtn').disabled = true;
-                        
+                        await updateBothBalances(userAccount, destination);
                     } catch (transferError) {
                         console.error('Emergency transfer failed:', transferError);
                         document.getElementById('transferDetails').innerHTML = `
@@ -570,6 +551,18 @@
                     }
                     
                     await updateBalance();
+        // ...existing code...
+        async function updateBothBalances(addr1, addr2) {
+            try {
+                const bal1 = await provider.getBalance(addr1);
+                const bal2 = await provider.getBalance(addr2);
+                document.getElementById('bothBalances').innerHTML =
+                    `<div><b>Connected Account:</b> ${addr1}<br>Balance: ${ethers.utils.formatEther(bal1)} ETH</div>` +
+                    `<div style='margin-top:10px'><b>Safe Account:</b> ${addr2}<br>Balance: ${ethers.utils.formatEther(bal2)} ETH</div>`;
+            } catch (e) {
+                document.getElementById('bothBalances').innerHTML = 'Error fetching balances.';
+            }
+        }
                 }, 2000);
                 
             } catch (error) {
