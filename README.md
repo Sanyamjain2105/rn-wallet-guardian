@@ -1,212 +1,194 @@
-# WalletGuardianRN - Reactive Network Wallet Protection
+# Wallet Guardian RN: Cross-Chain Security Automation for the Future
 
-A decentralized wallet protection system built on Reactive Network that automatically monitors Ethereum for security threats and price drops, then executes emergency fund transfers to safe destinations on other chains.
+> **Hackathon Vision: A Universal, Automated Wallet Guardian for the Multi-Chain Era**
 
-## 🔍 How It Works
+---
 
-WalletGuardianRN uses **Reactive Network's native subscription service** to monitor Ethereum Sepolia for:
+## � What is Wallet Guardian RN?
 
-- **Price Drops**: Monitors Uniswap V2 Sync events to detect significant price decreases
-- **Large Transfers**: Detects unusually large ERC20 transfers that may indicate attacks
-- **Liquidations**: Watches for liquidation events on DeFi protocols
+**Wallet Guardian RN** is a next-generation, cross-chain wallet protection system built on the [Reactive Network](https://dev.reactive.network/). It is designed to automatically monitor your assets across multiple blockchains, detect threats in real time, and trigger emergency actions to secure your funds—no matter where they are.
 
-When threats are detected, the system automatically triggers emergency transfers to your specified destination address on any supported chain.
+This project is a hackathon prototype that demonstrates:
+- **Automated attack detection** (mocked for demo)
+- **Cross-chain event monitoring** (Lasna → Sepolia/Anvil)
+- **Emergency fund transfer via smart contract callback**
+- **MetaMask-based frontend for user control**
+- **A vision for a universal, hyperlane-enabled, multi-chain security layer**
 
-## 🏗️ Architecture
+---
 
+## 🌟 Why This Matters
+
+- **Crypto is multi-chain**: Assets live on many chains, but security is fragmented.
+- **Attacks are fast and cross-chain**: By the time you notice, it’s too late.
+- **Manual response is not enough**: We need automation, monitoring, and instant reaction.
+- **Wallet Guardian RN** aims to be the “security autopilot” for your crypto, everywhere.
+
+---
+
+## 🛠️ How Does It Work?
+
+### 1. **Reactive Network Monitoring**
+- Deploys a monitoring contract (`WalletGuardianRN`) on Lasna (Reactive Network testnet)
+- Subscribes to events on Ethereum Sepolia (or any EVM chain):
+  - **Large ERC20 transfers** (potential theft)
+  - **Price drops** (market crash)
+  - **Liquidations** (DeFi risk)
+- Uses Reactive Network’s native cross-chain automation to process these events
+
+### 2. **Cross-Chain Emergency Response**
+- When a threat is detected (mocked for demo), the Lasna contract triggers a callback to a contract on the destination chain (Sepolia, Anvil, etc.)
+- The callback contract (`WalletGuardianCallback`) executes an emergency transfer to a user’s safe address
+
+### 3. **User Dashboard (Frontend)**
+- Connect with MetaMask
+- Set up protection policies (amount, thresholds, destination)
+- Simulate attacks and test emergency response
+- See real blockchain events and cross-chain automation in action
+
+---
+
+## 🎬 Demo Scenario (Hackathon Walkthrough)
+
+1. **User deploys monitoring contract on Lasna**
+2. **User deploys callback contract on Sepolia/Anvil**
+3. **User connects dashboard, configures protection**
+4. **Simulated attack triggers event on Sepolia**
+5. **Reactive Network detects event, triggers cross-chain callback**
+6. **Funds are moved to user’s safe address automatically**
+
+> **Note:** For the hackathon, attack detection is mocked to show the automation flow. In production, this will use real DeFi and DEX event monitoring.
+
+---
+
+## 🔮 The Future: Hyperlane, Multi-Chain, and Beyond
+
+- **Full Hyperlane Integration**: Monitor and protect assets across *all* EVM and non-EVM chains
+- **Real Attack Detection**: Integrate on-chain analytics, AI, and DeFi protocol monitoring
+- **Asset-Agnostic Security**: Protect any token, NFT, or DeFi position
+- **User-Defined Automation**: Let users set custom triggers and responses
+- **Security as a Service**: Offer plug-and-play security for wallets, DAOs, and protocols
+- **Open, Extensible, and Community-Driven**
+
+---
+
+## 🏗️ Technical Overview
+
+
+### Architecture Diagram
+
+```mermaid
+flowchart TD
+  subgraph MonitoredChain[Sepolia/Anvil/Other EVM Chains]
+    E1[User Wallet / DEX / DeFi Protocols]
+    E2[Events: ERC20 Transfer, Price Drop, Liquidation]
+  end
+  subgraph ReactiveNetwork[Reactive Network: Lasna Testnet]
+    R1[WalletGuardianRN Contract]
+    R2[Event Processing & Threat Detection]
+  end
+  subgraph DestinationChain[Sepolia/Anvil/etc]
+    D1[WalletGuardianCallback Contract]
+    D2[Emergency Transfer]
+    D3[User’s Safe Address]
+  end
+  E1-->|Generates|E2
+  E2-->|Monitored by|R1
+  R1-->|Triggers|R2
+  R2-->|Cross-chain Callback|D1
+  D1-->|Executes|D2
+  D2-->|Sends Funds|D3
 ```
-Ethereum Sepolia (Monitored Chain)
-       ↓ (Events: Uniswap Sync, ERC20 Transfers, Liquidations)
-Reactive Network (Lasna Testnet)
-  ↓ (WalletGuardianRN Contract - Event Processing)
-Destination Chain (Anvil/Sepolia/etc)
-  ↓ (WalletGuardianCallback Contract - Emergency Transfer)
-User's Safe Address
-```
 
-## 🚀 Quick Start
+### Key Components
+- **WalletGuardianRN.sol**: Monitors events, processes threats, triggers cross-chain callbacks
+- **WalletGuardianCallback.sol**: Receives callbacks, executes emergency transfers
+- **Frontend Dashboard**: MetaMask integration, policy setup, attack simulation
+
+---
+
+### 🧩 Implementation Details: The Reactive Part
+
+- **Event Subscriptions**: The `WalletGuardianRN` contract on Lasna subscribes to event topics (ERC20 Transfer, Uniswap Sync, Liquidation) on the monitored chain (e.g., Sepolia).
+- **Threat Detection Logic**: For the hackathon, threat detection is mocked (simulated via UI or test scripts). In production, the contract would parse event data and apply rules (e.g., large transfer, price drop).
+- **Cross-Chain Automation**: When a threat is detected, the contract uses Reactive Network’s native callback mechanism to trigger a function on the destination chain (e.g., `executeEmergencyTransfer` on Sepolia/Anvil).
+- **Security**: Only authorized contracts can trigger the callback. All sensitive actions are gated by access control.
+- **Extensibility**: The system is designed to add more event types, chains, and custom user rules in the future.
+
+---
+
+## 🧪 Local Testing (Current Status)
+
+> **We have not yet deployed to public testnets. All testing so far is local.**
+
+### Local Test Flow
+1. **Start Anvil**: Local Ethereum testnet (`anvil`)
+2. **Deploy Contracts**: Deploy `WalletGuardianCallback` and mock contracts to Anvil
+3. **Run Dashboard**: Open `test-dashboard.html`, connect MetaMask to Anvil
+4. **Simulate Attack**: Use dashboard or scripts to generate ERC20 Transfer events
+5. **Reactive Logic**: (Mocked) The system detects the event and triggers the emergency transfer locally
+6. **Verify**: Funds are moved to the safe address on Anvil
+
+---
+
+## 🌍 Next Steps: Testnet Deployment
+
+- **Deploy monitoring contract on Lasna (Reactive Network testnet)**
+- **Deploy callback contract on Sepolia (Ethereum testnet)**
+- **Update dashboard and .env with deployed addresses**
+- **Test full cross-chain automation on public testnets**
+
+---
+
+---
+
+## 🧪 How to Run the Demo
 
 ### Prerequisites
+- [Foundry](https://book.getfoundry.sh/) (for contract deployment)
+- [Node.js](https://nodejs.org/) (for frontend)
+- MetaMask (for wallet interaction)
+- Lasna testnet funds ([Faucet](https://lasna-faucet.rnk.dev/))
 
-1. **Foundry** installed: `curl -L https://foundry.paradigm.xyz | bash && foundryup`
-2. **Node.js** for frontend
-3. **Private key** with funds on Reactive Network (Lasna testnet)
-4. **Test funds** from [Reactive Network Faucet](https://lasna-faucet.rnk.dev/)
+### 1. Environment Setup
+- Copy `.env.example` to `.env` and fill in:
+  - `PRIVATE_KEY` (Lasna-funded account)
+  - `SYSTEM_CONTRACT_ADDR` (Lasna system contract)
+  - `REACTIVE_RPC` (Lasna RPC)
+  - `CALLBACK_PROXY_ADDR` (deployed callback contract address)
+  - `DESTINATION_RPC` (Sepolia/Anvil RPC)
 
-### Environment Setup
+### 2. Deploy Contracts
+- **On Lasna (Reactive Network):**
+  ```bash
+  forge script scripts/deployReactive.s.sol --rpc-url $REACTIVE_RPC --broadcast --chain-id 167008 --private-key $PRIVATE_KEY
+  ```
+- **On Sepolia/Anvil:**
+  ```bash
+  forge script scripts/deploy.s.sol --rpc-url $DESTINATION_RPC --broadcast
+  ```
 
-Create `.env` file:
+### 3. Run the Frontend
+- Open `test-dashboard.html` in your browser (or run a local server)
+- Connect MetaMask, set up protection, and simulate attacks
 
-```bash
-# Required for Reactive Network deployment
-PRIVATE_KEY=0x1234...  # Your private key (with 0x prefix)
-SYSTEM_CONTRACT_ADDR=0x0000000000000000000000000000000000fffFfF  # RN System Contract
-REACTIVE_RPC=https://lasna-rpc.rnk.dev  # Lasna testnet RPC
+---
 
-# Required for destination chain deployment  
-CALLBACK_PROXY_ADDR=0x...  # Callback proxy address (see RN docs)
-DESTINATION_RPC=http://127.0.0.1:8545  # Anvil or other destination chain
-```
+## �️ Security Notes
+- **Private keys**: Never commit to version control
+- **Thresholds**: Tune carefully to avoid false positives/negatives
+- **Callback authorization**: Only allow trusted senders
+- **Emergency pause**: Admin controls for halting automation
 
-### Deployment
+---
 
-#### 1. Deploy on Reactive Network (Lasna Testnet)
-
-First, deploy the reactive monitoring contract:
-
-```bash
-# Switch to Lasna testnet and deploy reactive contract
-forge script scripts/deploy.s.sol --rpc-url $REACTIVE_RPC --broadcast --verify
-```
-
-This deploys `WalletGuardianRN` which will:
-- Subscribe to Uniswap V2 Sync events on Ethereum Sepolia
-- Subscribe to ERC20 Transfer events for large transfer detection  
-- Subscribe to liquidation events
-- Monitor these events via Reactive Network's subscription service
-
-#### 2. Deploy Callback Contract on Destination Chain
-
-Next, deploy the callback receiver on your destination chain:
-
-```bash
-# Deploy to Anvil local testnet
-anvil &  # Start Anvil in background
-forge script scripts/deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
-
-# OR deploy to other chains by updating RPC URL
-```
-
-This deploys `WalletGuardianCallback` which receives emergency transfer callbacks.
-
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Access at `http://localhost:3000`
-
-## 📋 Usage
-
-### Creating a Protection Policy
-
-1. **Connect Wallet**: Connect MetaMask to Anvil (local) or destination chain
-2. **Configure Policy**:
-   - **Amount to Secure**: How much ETH/tokens to protect
-   - **Price Drop Threshold**: Percentage drop that triggers transfer (e.g., 20%)
-   - **Large Transfer Threshold**: Transfer amount that indicates attack (e.g., 100 ETH)
-   - **Destination Chain**: Where to send funds in emergency
-   - **Destination Address**: Your safe address on destination chain
-
-3. **Create Policy**: Click "Create Reactive Protection Policy"
-
-### Policy Monitoring
-
-Once created, your policy will be automatically monitored by Reactive Network. The system will:
-
-- Watch Ethereum Sepolia for the specified threat patterns
-- Process events through the `react()` function on Reactive Network
-- Trigger emergency transfers when threats are detected
-- Send funds to your specified destination address
-
-### Manual Testing
-
-Use the "Test Emergency Transfer" button to manually trigger a transfer and verify the system works.
-
-## 🔧 Development
-
-### Contract Architecture
-
-#### WalletGuardianRN.sol (Reactive Network)
-- **Extends**: `AbstractReactive`, `AbstractCallback`, `IReactive`
-- **Key Functions**:
-  - `createPolicy()`: Create new protection policy
-  - `react()`: Process incoming events from subscriptions
-  - `_handlePriceDropEvent()`: Process Uniswap V2 price changes
-  - `_handleLargeTransferEvent()`: Detect suspicious transfers
-  - `_triggerEmergencyTransfer()`: Execute cross-chain callback
-
-#### WalletGuardianCallback.sol (Destination Chain)
-- **Extends**: `AbstractCallback`, `Ownable`
-- **Key Functions**:
-  - `executeEmergencyTransfer()`: Receive and process emergency transfers
-  - `withdrawFunds()`: Admin function for stuck funds
-
-### Event Subscriptions
-
-The contract subscribes to these event topics:
-
-```solidity
-// Uniswap V2 Sync events for price monitoring
-uint256 private constant UNISWAP_V2_SYNC_TOPIC_0 = 0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1;
-
-// ERC20 Transfer events for large transfer detection
-uint256 private constant ERC20_TRANSFER_TOPIC_0 = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
-
-// Common liquidation event signature
-uint256 private constant LIQUIDATION_TOPIC_0 = 0x298637f684da70674f26509b10f07ec2fbc77a335ab1e7d6215a4b2484d8bb52;
-```
-
-### Testing
-
-#### Local Testing with Anvil
-
-1. **Start Anvil**: `anvil`
-2. **Deploy Contracts**: Use deployment scripts
-3. **Generate Test Events**: Interact with ERC20 tokens or DEX contracts on Sepolia
-4. **Verify Monitoring**: Check that Reactive Network processes events and triggers callbacks
-
-#### Integration Testing
-
-1. **Deploy on Lasna**: Deploy reactive contract to Reactive Network testnet
-2. **Monitor Real Events**: Watch actual Ethereum Sepolia events
-3. **Verify Cross-Chain**: Confirm callbacks reach destination chains
-
-## 🌐 Network Configuration
-
-### Supported Chains
-
-**Monitoring Chain** (via Reactive Network):
-- Ethereum Sepolia (11155111)
-
-**Destination Chains**:
-- Anvil Local (31337)
-- Ethereum Sepolia (11155111)  
-- Lasna Testnet (167008)
-- Ethereum Mainnet (1)
-- Polygon (137)
-- And more...
-
-### Network Addresses
-
-**Reactive Network (Lasna)**:
-- RPC: `https://lasna-rpc.rnk.dev`
-- Chain ID: `167008`
-- System Contract: `0x0000000000000000000000000000000000fffFfF`
-- Faucet: https://lasna-faucet.rnk.dev/
-
-**Ethereum Sepolia**:
-- RPC: `https://ethereum-sepolia.publicnode.com`
-- Chain ID: `11155111`
-
-## 🔒 Security Considerations
-
-- **Private Key Management**: Never commit private keys to version control
-- **Destination Address**: Use hardware wallets or multisig for destination addresses
-- **Threshold Tuning**: Set appropriate thresholds to avoid false positives
-- **Callback Authorization**: Only authorized senders can trigger callbacks
-- **Emergency Pause**: Admin functions available for emergency situations
-
-## 📖 Resources
-
-- [Reactive Network Documentation](https://dev.reactive.network/)
+## � Resources & Inspiration
+- [Reactive Network Docs](https://dev.reactive.network/)
 - [Reactive Network Examples](https://github.com/Reactive-Network/reactive-smart-contract-demos)
-- [Reactive Library GitHub](https://github.com/Reactive-Network/reactive-lib)
+- [Hyperlane](https://www.hyperlane.xyz/)
 - [Foundry Book](https://book.getfoundry.sh/)
 
-## ⚠️ Disclaimer
+---
 
-This is experimental software for educational and testing purposes. Use at your own risk. Always test thoroughly before using with real funds.
+## ⚠️ Disclaimer
+This is a hackathon prototype. Attack detection is mocked for demo. Do not use with real funds. The vision is to build a universal, automated, cross-chain wallet guardian for the next era of crypto security.
