@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Advanced Wallet Guardian - Real Protection + Demo Mode</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .mode-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .mode-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .mode-card.active {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+        
+        .real-mode {
+            border-left: 5px solid #ff4444;
+        }
+        
+        .demo-mode {
+            border-left: 5px solid #44ff44;
+        }
+        
+        .protection-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .status-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .chainlink-monitor {
+            background: rgba(255, 165, 0, 0.2);
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .threat-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .threat-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .threat-low { background: #4CAF50; }
+        .threat-medium { background: #ff9800; }
+        .threat-high { background: #f44336; }
+        
+        .demo-section {
+            background: rgba(68, 255, 68, 0.1);
+            border: 2px solid #44ff44;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .real-section {
+            background: rgba(255, 68, 68, 0.1);
+            border: 2px solid #ff4444;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .wallet-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .chain-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .chain-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chain-option:hover {
+            border-color: #4CAF50;
+        }
+        
+        .chain-option.selected {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Back Navigation -->
+        <div style="margin-bottom: 20px;">
+            <button onclick="window.location.href='index.html'" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                ← Back to Protection Center
+            </button>
+            <span style="float: right; background: rgba(102, 126, 234, 0.8); padding: 8px 15px; border-radius: 15px; font-size: 12px; font-weight: 600;">
+                🌉 Cross-Chain Mode
+            </span>
+        </div>
+        
+        <div class="header">
+            <h1>🛡️ Advanced Wallet Guardian</h1>
+            <p>Real Fund Protection + Safe Demo Mode</p>
+        </div>
+
+        <!-- Wallet Connection -->
+        <div class="wallet-info" id="walletInfo">
+            <button class="btn btn-primary" id="connectBtn">Connect Wallet</button>
+            <div id="walletStatus" class="hidden">
+                <strong>✅ Wallet Connected:</strong>
+                <span id="walletAddress"></span>
+                <br>
+                <strong>Balance:</strong> <span id="walletBalance"></span> ETH
+            </div>
+        </div>
+
+        <!-- Mode Selection -->
+        <div class="mode-selector">
+            <div class="mode-card demo-mode" id="demoMode">
+                <h3>🎮 Demo Mode</h3>
+                <p>Safe testing with simulated attacks</p>
+                <p><small>Perfect for presentations & learning</small></p>
+            </div>
+            <div class="mode-card real-mode" id="realMode">
+                <h3>🔒 Real Protection</h3>
+                <p>Actual fund protection with live monitoring</p>
+                <p><small>Real funds, real security</small></p>
+            </div>
+        </div>
+
+        <!-- Fund Deposit Section - Available in Both Modes -->
+        <div class="panel" id="depositSection">
+            <h3>💰 Deposit Funds for Protection</h3>
+            <p id="depositModeInfo">
+                <span id="realDepositInfo" style="color: #ff4444;">⚠️ Real ETH will be deposited for actual protection</span>
+                <span id="demoDepositInfo" style="color: #44ff44;">🎮 Test ETH deposit required for demo policy creation</span>
+            </p>
+            <div class="input-group">
+                <label>Amount to Deposit (ETH)</label>
+                <input type="number" id="depositAmount" placeholder="0.1" step="0.01">
+            </div>
+            <button class="btn btn-primary" id="depositBtn">Deposit Funds</button>
+            <div id="depositStatus"></div>
+        </div>
+
+        <!-- Protection Setup -->
+        <div class="protection-panel">
+            <div class="panel">
+                <h3>🛡️ Protection Configuration</h3>
+                
+                <div class="input-group">
+                    <label>Protected Amount (ETH)</label>
+                    <input type="number" id="protectedAmount" placeholder="0.5" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label>Safe Destination Address</label>
+                    <input type="text" id="safeAddress" placeholder="0x...">
+                </div>
+
+                <div class="input-group">
+                    <label>Price Drop Threshold (%)</label>
+                    <input type="number" id="priceThreshold" placeholder="20" min="1" max="50">
+                </div>
+
+                <div class="chain-selector">
+                    <div class="chain-option" data-chain="ethereum">
+                        <strong>🔷 Ethereum</strong>
+                        <br><small>Mainnet</small>
+                    </div>
+                    <div class="chain-option" data-chain="polygon">
+                        <strong>🟣 Polygon</strong>
+                        <br><small>Matic Network</small>
+                    </div>
+                    <div class="chain-option" data-chain="bsc">
+                        <strong>🟡 BSC</strong>
+                        <br><small>Binance Smart Chain</small>
+                    </div>
+                    <div class="chain-option" data-chain="anvil">
+                        <strong>⚒️ Anvil</strong>
+                        <br><small>Local Testing</small>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="setupProtectionBtn">🛡️ Setup Protection</button>
+            </div>
+
+            <div class="panel">
+                <h3>📊 Real-Time Monitoring</h3>
+                
+                <div class="chainlink-monitor">
+                    <h4>📡 Chainlink Price Feeds</h4>
+                    <div class="threat-level">
+                        <div class="threat-indicator threat-low"></div>
+                        <span>ETH/USD: $<span id="ethPrice">Loading...</span></span>
+                    </div>
+                    <div class="threat-level">
+                        <div class="threat-indicator threat-low"></div>
+                        <span>Price Volatility: <span id="volatility">Low</span></span>
+                    </div>
+                </div>
+
+                <div class="threat-level">
+                    <div class="threat-indicator threat-low" id="overallThreat"></div>
+                    <span>Overall Threat Level: <span id="threatStatus">Secure</span></span>
+                </div>
+
+                <button class="btn btn-warning" id="checkThreatsBtn">🔍 Check Current Threats</button>
+            </div>
+        </div>
+
+        <!-- Demo Attack Section -->
+        <div class="demo-section" id="demoSection">
+            <h3>🎮 Safe Demo Attacks</h3>
+            <p>These buttons simulate attacks without moving real funds - perfect for demonstrations!</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                <button class="btn btn-warning" data-attack="flashloan">⚡ Flash Loan Attack</button>
+                <button class="btn btn-warning" data-attack="large-transfer">💸 Large Transfer</button>
+                <button class="btn btn-warning" data-attack="price-drop">📉 Price Manipulation</button>
+                <button class="btn btn-warning" data-attack="liquidation">🔥 Liquidation Attack</button>
+                <button class="btn btn-warning" data-attack="mev">🤖 MEV Sandwich</button>
+                <button class="btn btn-warning" data-attack="governance">🏛️ Governance Attack</button>
+            </div>
+        </div>
+
+        <!-- Status Display -->
+        <div class="status-panel" id="statusPanel">
+            <h3>📋 Protection Status</h3>
+            <div id="protectionStatus">
+                <p>No protection configured yet.</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="status-panel hidden" id="resultsSection">
+            <h3>🎯 Protection Response</h3>
+            <div id="responseDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        let provider, signer, userAccount;
+        let currentMode = 'demo';
+        let selectedChain = 'anvil';
+        
+        // 📋 Contract Addresses (Updated from deployComplete.s.sol)
+        let contractAddress = '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'; // Advanced Wallet Guardian
+        let priceFeedAddress = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'; // ETH/USD Price Feed
+        let mockAttackAddress = '0x0165878A594ca255338adfa4d48449f69242Eb8F'; // Mock Attack Contract
+        
+        // Contract ABI (simplified)
+        const contractABI = [
+            "function depositFunds() payable external",
+            "function createProtectionPolicy(uint256,address,address,bool,uint256) external",
+            "function triggerDemoAttack(string) external",
+            "function detectAndRespond() external",
+            "function userDeposits(address) view returns (uint256)",
+            "function getLatestPrice() view returns (uint256)",
+            "function checkPriceThreats() view returns (bool)",
+            "event FundsDeposited(address indexed user, uint256 amount, uint256 timestamp)",
+            "event DemoAttackTriggered(address indexed user, string attackType, uint256 timestamp)",
+            "event EmergencyTransferExecuted(address indexed user, uint256 amount, address destination)"
+        ];
+
+        // Price Feed ABI
+        const priceFeedABI = [
+            "function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)",
+            "function updateAnswer(int256) external"
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateModeDisplay();
+        });
+
+        function setupEventListeners() {
+            // Wallet connection
+            document.getElementById('connectBtn').onclick = connectWallet;
+            
+            // Mode selection
+            document.getElementById('demoMode').onclick = () => setMode('demo');
+            document.getElementById('realMode').onclick = () => setMode('real');
+            
+            // Chain selection
+            document.querySelectorAll('.chain-option').forEach(option => {
+                option.onclick = () => selectChain(option.dataset.chain);
+            });
+            
+            // Protection setup
+            document.getElementById('depositBtn').onclick = depositFunds;
+            document.getElementById('setupProtectionBtn').onclick = setupProtection;
+            document.getElementById('checkThreatsBtn').onclick = checkThreats;
+            
+            // Demo attacks
+            document.querySelectorAll('[data-attack]').forEach(btn => {
+                btn.onclick = () => triggerDemoAttack(btn.dataset.attack);
+            });
+        }
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    signer = provider.getSigner();
+                    userAccount = await signer.getAddress();
+                    
+                    document.getElementById('walletAddress').textContent = userAccount;
+                    const balance = await provider.getBalance(userAccount);
+                    document.getElementById('walletBalance').textContent = ethers.utils.formatEther(balance);
+                    
+                    document.getElementById('connectBtn').style.display = 'none';
+                    document.getElementById('walletStatus').classList.remove('hidden');
+                    
+                    // Load user's protection status
+                    await loadProtectionStatus();
+                } else {
+                    alert('Please install MetaMask!');
+                }
+            } catch (error) {
+                console.error('Wallet connection failed:', error);
+                alert('Failed to connect wallet: ' + error.message);
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            updateModeDisplay();
+        }
+
+        function updateModeDisplay() {
+            // Update mode cards
+            document.getElementById('demoMode').classList.toggle('active', currentMode === 'demo');
+            document.getElementById('realMode').classList.toggle('active', currentMode === 'real');
+            
+            // Show/hide sections based on mode
+            // Update UI based on selected mode
+            document.getElementById('depositSection').style.display = 'block'; // Always show deposits
+            document.getElementById('realDepositInfo').style.display = currentMode === 'real' ? 'block' : 'none';
+            document.getElementById('demoDepositInfo').style.display = currentMode === 'demo' ? 'block' : 'none';
+            document.getElementById('demoSection').style.display = currentMode === 'demo' ? 'block' : 'none';
+        }
+
+        function selectChain(chain) {
+            selectedChain = chain;
+            document.querySelectorAll('.chain-option').forEach(option => {
+                option.classList.toggle('selected', option.dataset.chain === chain);
+            });
+        }
+
+        async function depositFunds() {
+            try {
+                if (!signer) {
+                    alert('Please connect wallet first');
+                    return;
+                }
+
+                const amount = document.getElementById('depositAmount').value;
+                if (!amount || amount <= 0) {
+                    alert('Please enter a valid amount');
+                    return;
+                }
+
+                const contract = new ethers.Contract(contractAddress, contractABI, signer);
+                const tx = await contract.depositFunds({
+                    value: ethers.utils.parseEther(amount)
+                });
+
+                document.getElementById('depositStatus').innerHTML = `
+                    <div style="color: orange;">⏳ Depositing ${amount} ETH... TX: ${tx.hash}</div>
+                `;
+
+                const receipt = await tx.wait();
+                document.getElementById('depositStatus').innerHTML = `
+                    <div style="color: green;">✅ Successfully deposited ${amount} ETH!</div>
+                `;
+
+                // Refresh balance
+                const balance = await provider.getBalance(userAccount);
+                document.getElementById('walletBalance').textContent = ethers.utils.formatEther(balance);
+
+            } catch (error) {
+                console.error('Deposit failed:', error);
+                document.getElementById('depositStatus').innerHTML = `
+                    <div style="color: red;">❌ Deposit failed: ${error.message}</div>
+                `;
+            }
+        }
+
+        async function setupProtection() {
+            try {
+                if (!signer) {
+                    alert('Please connect wallet first');
+                    return;
+                }
+
+                const protectedAmount = document.getElementById('protectedAmount').value;
+                const safeAddress = document.getElementById('safeAddress').value;
+                const priceThreshold = document.getElementById('priceThreshold').value;
+
+                if (!protectedAmount || !safeAddress || !priceThreshold) {
+                    alert('Please fill all fields');
+                    return;
+                }
+
+                // For demo, we'll use a simple address mapping for chains
+                const chainAddresses = {
+                    'ethereum': '0x0000000000000000000000000000000000000001',
+                    'polygon': '0x0000000000000000000000000000000000000002',
+                    'bsc': '0x0000000000000000000000000000000000000003',
+                    'anvil': '0x0000000000000000000000000000000000000004'
+                };
+
+                const contract = new ethers.Contract(contractAddress, contractABI, signer);
+                const tx = await contract.createProtectionPolicy(
+                    ethers.utils.parseEther(protectedAmount),
+                    chainAddresses[selectedChain],
+                    safeAddress,
+                    currentMode === 'demo',
+                    priceThreshold
+                );
+
+                document.getElementById('protectionStatus').innerHTML = `
+                    <div style="color: orange;">⏳ Setting up protection... TX: ${tx.hash}</div>
+                `;
+
+                const receipt = await tx.wait();
+                document.getElementById('protectionStatus').innerHTML = `
+                    <div style="color: green;">
+                        ✅ Protection Active!<br>
+                        Mode: ${currentMode === 'demo' ? '🎮 Demo' : '🔒 Real'}<br>
+                        Amount: ${protectedAmount} ETH<br>
+                        Chain: ${selectedChain}<br>
+                        Safe Address: ${safeAddress}
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Protection setup failed:', error);
+                document.getElementById('protectionStatus').innerHTML = `
+                    <div style="color: red;">❌ Setup failed: ${error.message}</div>
+                `;
+            }
+        }
+
+        async function triggerDemoAttack(attackType) {
+            try {
+                if (!signer) {
+                    alert('Please connect wallet first');
+                    return;
+                }
+
+                if (currentMode !== 'demo') {
+                    alert('Demo attacks only work in Demo Mode!');
+                    return;
+                }
+
+                const contract = new ethers.Contract(contractAddress, contractABI, signer);
+                const tx = await contract.triggerDemoAttack(attackType);
+
+                document.getElementById('resultsSection').classList.remove('hidden');
+                document.getElementById('responseDetails').innerHTML = `
+                    <div style="color: orange;">⏳ Simulating ${attackType} attack... TX: ${tx.hash}</div>
+                `;
+
+                const receipt = await tx.wait();
+                document.getElementById('responseDetails').innerHTML = `
+                    <div style="color: green;">
+                        <strong>🎮 DEMO ATTACK SIMULATED</strong><br><br>
+                        Attack Type: ${attackType}<br>
+                        Response: Instant Protection Triggered<br>
+                        Status: ✅ Demo Successful<br><br>
+                        <em>Note: No real funds were moved in this demonstration</em>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Demo attack failed:', error);
+                alert('Demo failed: ' + error.message);
+            }
+        }
+
+        async function checkThreats() {
+            // Simulate threat checking
+            document.getElementById('threatStatus').textContent = 'Checking...';
+            
+            setTimeout(() => {
+                const threats = ['Low', 'Medium', 'High'];
+                const threat = threats[Math.floor(Math.random() * threats.length)];
+                
+                document.getElementById('threatStatus').textContent = threat;
+                document.getElementById('overallThreat').className = `threat-indicator threat-${threat.toLowerCase()}`;
+                
+                // Simulate price updates
+                const price = (2000 + Math.random() * 1000).toFixed(2);
+                document.getElementById('ethPrice').textContent = price;
+                
+                const volatilities = ['Low', 'Medium', 'High'];
+                document.getElementById('volatility').textContent = volatilities[Math.floor(Math.random() * volatilities.length)];
+            }, 1000);
+        }
+
+        async function loadProtectionStatus() {
+            // Load user's current protection status from contract
+            // This would query the contract for existing policies
+        }
+
+        // Auto-update prices every 30 seconds
+        setInterval(checkThreats, 30000);
+    </script>
+</body>
+</html>

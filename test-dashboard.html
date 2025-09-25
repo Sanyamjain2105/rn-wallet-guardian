@@ -207,6 +207,16 @@
 </head>
 <body>
     <div class="container">
+        <!-- Back Navigation -->
+        <div style="margin-bottom: 20px;">
+            <button onclick="window.location.href='index.html'" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                ← Back to Protection Center
+            </button>
+            <span style="float: right; background: rgba(76, 175, 80, 0.8); padding: 8px 15px; border-radius: 15px; font-size: 12px; font-weight: 600;">
+                🔄 Same Chain Mode
+            </span>
+        </div>
+        
         <div class="header">
             <h1>🛡️ Wallet Guardian</h1>
             <p>Simple Fund Protection System</p>
@@ -317,9 +327,9 @@
         let guardianContract;
         let mockAttackContract;
         
-        // Deployed contract addresses
-        let callbackContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-        let mockAttackContractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+        // Deployed contract addresses (Updated from deployComplete.s.sol)
+        let callbackContractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"; // Callback Contract
+        let mockAttackContractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F"; // Mock Attack Contract
 
         // Contract ABIs
         const callbackABI = [

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Wallet Guardian - Protection Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1000px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .header {
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+        }
+        
+        .protection-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 50px 0;
+        }
+        
+        .option-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .option-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .cross-chain::before {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .option-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .option-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .option-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .feature-list {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .feature-list li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+        
+        .option-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(76, 175, 80, 0.8);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .advanced-badge {
+            background: rgba(102, 126, 234, 0.8);
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        .cta-button.advanced {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .cta-button.advanced:hover {
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .features-section {
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .feature-item .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .feature-item h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .feature-item p {
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .protection-options {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .header h1 {
+                font-size: 3rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .demo-note {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .version-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Wallet Guardian</h1>
+            <p>Advanced Cross-Chain Fund Protection System</p>
+            <div class="subtitle">Choose your protection method and secure your funds with cutting-edge technology</div>
+        </div>
+        
+        <div class="protection-options">
+            <!-- Same Chain Protection -->
+            <div class="option-card same-chain" onclick="selectProtectionType('same-chain')">
+                <div class="option-badge">Quick Setup</div>
+                <div class="option-icon">🔄</div>
+                <div class="option-title">Same Chain Protection</div>
+                <div class="option-description">
+                    Fast and simple protection within the same blockchain network
+                </div>
+                <ul class="feature-list">
+                    <li>Instant setup & testing</li>
+                    <li>Demo attack simulations</li>
+                    <li>Real fund transfers</li>
+                    <li>Local blockchain testing</li>
+                    <li>Perfect for beginners</li>
+                </ul>
+                <button class="cta-button" onclick="goToSameChain(event)">
+                    🚀 Start Same Chain Protection
+                </button>
+                <div class="demo-note">
+                    ⚡ Perfect for quick testing and demonstrations
+                </div>
+            </div>
+            
+            <!-- Cross-Chain Protection -->
+            <div class="option-card cross-chain" onclick="selectProtectionType('cross-chain')">
+                <div class="option-badge advanced-badge">Advanced Features</div>
+                <div class="option-icon">🌉</div>
+                <div class="option-title">Cross-Chain Protection</div>
+                <div class="option-description">
+                    Advanced multi-chain protection with Reactive Network monitoring
+                </div>
+                <ul class="feature-list">
+                    <li>Multi-chain fund deposits</li>
+                    <li>Chainlink price oracles</li>
+                    <li>Real-time threat monitoring</li>
+                    <li>Advanced demo modes</li>
+                    <li>Production-ready security</li>
+                </ul>
+                <button class="cta-button advanced" onclick="goToCrossChain(event)">
+                    🔥 Start Cross-Chain Protection
+                </button>
+                <div class="demo-note">
+                    🏆 Enterprise-grade protection with advanced features
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-section">
+            <h3>🔥 Powered by Cutting-Edge Technology</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="icon">📡</span>
+                    <h4>Reactive Network</h4>
+                    <p>Real-time cross-chain monitoring and automated responses to threats</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🔗</span>
+                    <h4>Chainlink Oracles</h4>
+                    <p>Reliable price feeds and economic security indicators</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">⚡</span>
+                    <h4>Instant Response</h4>
+                    <p>Sub-second threat detection and emergency fund transfers</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🛡️</span>
+                    <h4>Multi-Layer Security</h4>
+                    <p>Advanced threat detection across multiple attack vectors</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="version-info">
+        v2.0 | Reactive Network Integration
+    </div>
+    
+    <script>
+        function selectProtectionType(type) {
+            console.log('Selected protection type:', type);
+            
+            // Add visual feedback
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.style.transform = 'scale(0.95)';
+                card.style.opacity = '0.7';
+            });
+            
+            setTimeout(() => {
+                document.querySelectorAll('.option-card').forEach(card => {
+                    card.style.transform = 'scale(1)';
+                    card.style.opacity = '1';
+                });
+            }, 200);
+        }
+        
+        function goToSameChain(event) {
+            event.stopPropagation();
+            
+            // Add loading effect
+            event.target.textContent = '🚀 Loading Same Chain Protection...';
+            event.target.disabled = true;
+            
+            // Redirect to original dashboard
+            setTimeout(() => {
+                window.location.href = 'test-dashboard.html';
+            }, 1000);
+        }
+        
+        function goToCrossChain(event) {
+            event.stopPropagation();
+            
+            // Add loading effect
+            event.target.textContent = '🔥 Loading Cross-Chain Protection...';
+            event.target.disabled = true;
+            
+            // Redirect to advanced dashboard
+            setTimeout(() => {
+                window.location.href = 'advanced-dashboard.html';
+            }, 1000);
+        }
+        
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on load
+            const cards = document.querySelectorAll('.option-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 * (index + 1));
+            });
+            
+            // Add hover sound effect simulation
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 25px 50px rgba(0,0,0,0.25)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
